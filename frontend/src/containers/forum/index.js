@@ -15,7 +15,7 @@ const ForumContainer = (props) => {
 
   useEffect(() => {
     props.fetchForum(forum);
-  }, [forum, props]);
+  }, []);
 
   const {
     isLoading,
