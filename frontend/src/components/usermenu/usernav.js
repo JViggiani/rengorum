@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {withRouter} from 'react-router';
+import {useLocation, useNavigate, useParams} from 'react-router';
 import Avatar from '../avatar';
 import {Menu, Dropdown} from 'semantic-ui-react';
 import './styles.css';
@@ -45,5 +45,20 @@ class UserNav extends Component {
     );
   }
 }
+
+const withRouter = Component => props => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
+
+  return (
+    <Component
+      {...props}
+      location={location}
+      navigate={navigate}
+      params={params}
+    />
+  );
+};
 
 export default withRouter(UserNav);
