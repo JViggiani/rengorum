@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   createThreadSave,
   createThreadToggle,
@@ -10,34 +10,13 @@ import ThreadList from '../../components/threadlist';
 import NewThread from '../../components/newthread';
 import { useParams } from 'react-router-dom';
 
-const ForumContainer = () => {
-  
+const ForumContainer = (props) => {
   const { forum } = useParams();
-  
-  const forumData = useSelector((state) => state.forumData);
-
-  const dispatch = useDispatch();
-  
-  const handleFetchForum = useCallback((forum) => {
-    dispatch(fetchForum(forum));
-  }, [dispatch]);
-  
-  const handleCreateThread = () => {
-    dispatch(createThread());
-  };
-  
-  const handleCreateThreadSave = (threadData) => {
-    dispatch(createThreadSave(threadData));
-  };
-  
-  const handleCreateThreadToggle = () => {
-    dispatch(createThreadToggle());
-  };
 
   useEffect(() => {
-    handleFetchForum(forum);
-  }, [forum, handleFetchForum]);
-  
+    props.fetchForum(forum);
+  }, [forum, props]);
+
   const {
     isLoading,
     name,
@@ -53,7 +32,10 @@ const ForumContainer = () => {
     newThreadId,
     newThreadError,
     newThreadShow,
-  } = forumData;
+    createThread,
+    createThreadSave,
+    createThreadToggle,
+  } = props;
 
   return (
     <div>
@@ -67,9 +49,9 @@ const ForumContainer = () => {
         id={newThreadId}
         error={newThreadError}
         showEditor={newThreadShow}
-        createThread={handleCreateThread}
-        updateNewThread={handleCreateThreadSave}
-        toggleShowEditor={handleCreateThreadToggle}
+        createThread={createThread}
+        updateNewThread={createThreadSave}
+        toggleShowEditor={createThreadToggle}
         maxLength={2000}
       />
       <ThreadList
@@ -84,4 +66,40 @@ const ForumContainer = () => {
   );
 };
 
-export default ForumContainer;
+
+const mapStateToProps = state => ({
+  isLoading: state.forum.isLoading,
+  name: state.forum.name,
+  slug: state.forum.slug,
+  description: state.forum.description,
+  threads: state.forum.threads,
+  error: state.forum.error,
+  isAuthenticated: state.auth.isAuthenticated,
+  newThreadLoading: state.forum.newThreadLoading,
+  newThreadSuccess: state.forum.newThreadSuccess,
+  newThreadName: state.forum.newThreadName,
+  newThreadContent: state.forum.newThreadContent,
+  newThreadId: state.forum.newThreadId,
+  newThreadError: state.forum.newThreadError,
+  newThreadShow: state.forum.newThreadShow,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchForum: forum => {
+    dispatch(fetchForum(forum));
+  },
+  createThread: newThread => {
+    dispatch(createThread(newThread));
+  },
+  createThreadSave: newThread => {
+    dispatch(createThreadSave(newThread));
+  },
+  createThreadToggle: () => {
+    dispatch(createThreadToggle());
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ForumContainer);
