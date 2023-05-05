@@ -1,67 +1,53 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Navlink from '../../components/navlink';
 import UserMenu from '../../components/usermenu';
 import './styles.css';
-import {showModal, logout} from '../../actions';
+import { showModal, logout } from '../../actions';
 
-class HeaderContainer extends Component {
-  render() {
-    const {
-      isAuthenticated,
-      username,
-      name,
-      avatar,
-      handleLogout,
-      isLoading,
-      showRegister,
-      showLogin,
-      showEditProfile,
-    } = this.props;
+const HeaderContainer = () => {
+  const { isAuthenticated, username, name, avatar, isLoading } = useSelector((state) => ({
+    isAuthenticated: state.auth.isAuthenticated,
+    username: state.auth.username,
+    name: state.auth.name,
+    avatar: state.auth.avatar,
+    isLoading: state.auth.isLoading,
+  }));
 
-    return (
-      <div className="headerContainer">
-        <Navlink />
-        <UserMenu
-          isAuthenticated={isAuthenticated}
-          username={username}
-          name={name}
-          avatar={avatar}
-          logout={handleLogout}
-          isLoading={isLoading}
-          showRegister={showRegister}
-          showLogin={showLogin}
-          showEditProfile={showEditProfile}
-        />
-      </div>
-    );
-  }
-}
+  const dispatch = useDispatch();
 
-const mapStateToProps = state => ({
-  username: state.auth.username,
-  name: state.auth.name,
-  avatar: state.auth.avatar,
-  isAuthenticated: state.auth.isAuthenticated,
-  isLoading: state.auth.isLoading,
-});
-
-const mapDispatchToProps = dispatch => ({
-  handleLogout: () => {
+  const handleLogout = () => {
     dispatch(logout());
-  },
-  showRegister: () => {
-    dispatch(showModal('REGISTER', {}));
-  },
-  showLogin: () => {
-    dispatch(showModal('LOGIN', {}));
-  },
-  showEditProfile: () => {
-    dispatch(showModal('EDIT_PROFILE', {}));
-  },
-});
+  };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(HeaderContainer);
+  const showRegister = () => {
+    dispatch(showModal('REGISTER', {}));
+  };
+
+  const showLogin = () => {
+    dispatch(showModal('LOGIN', {}));
+  };
+
+  const showEditProfile = () => {
+    dispatch(showModal('EDIT_PROFILE', {}));
+  };
+
+  return (
+    <div className="headerContainer">
+      <Navlink />
+      <UserMenu
+        isAuthenticated={isAuthenticated}
+        username={username}
+        name={name}
+        avatar={avatar}
+        logout={handleLogout}
+        isLoading={isLoading}
+        showRegister={showRegister}
+        showLogin={showLogin}
+        showEditProfile={showEditProfile}
+      />
+    </div>
+  );
+};
+
+export default HeaderContainer;

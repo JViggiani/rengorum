@@ -1,31 +1,22 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {fetchForums} from '../../actions';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchForums } from '../../actions';
 import ForumList from '../../components/forumlist';
 
-class HomeContainer extends Component {
-  componentDidMount() {
-    this.props.fetchForums();
-  }
+const HomeContainer = () => {
+  const { isLoading, forums, error } = useSelector((state) => ({
+    isLoading: state.home.isLoading,
+    forums: state.home.forums,
+    error: state.home.error,
+  }));
 
-  render() {
-    return <ForumList {...this.props} />;
-  }
-}
+  const dispatch = useDispatch();
 
-const mapStateToProps = state => ({
-  isLoading: state.home.isLoading,
-  forums: state.home.forums,
-  error: state.home.error,
-});
-
-const mapDispatchToProps = dispatch => ({
-  fetchForums: () => {
+  useEffect(() => {
     dispatch(fetchForums());
-  },
-});
+  }, [dispatch]);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(HomeContainer);
+  return <ForumList isLoading={isLoading} forums={forums} error={error} />;
+};
+
+export default HomeContainer;

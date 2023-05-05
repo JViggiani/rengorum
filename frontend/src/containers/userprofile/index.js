@@ -1,77 +1,58 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {fetchUserProfile} from '../../actions';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserProfile } from '../../actions';
 import StatusMessage from '../../components/statusmessage';
 import Profile from '../../components/profile';
+import { useParams } from 'react-router-dom';
 import './styles.css';
 
-class UserProfileContainer extends Component {
-  componentDidMount() {
-    const {username} = this.props.match.params;
-    this.props.fetchUserProfile(username);
-  }
+const UserProfileContainer = () => {
+  const { isLoading, error, profile } = useSelector((state) => ({
+    isLoading: state.userProfile.isLoading,
+    profile: state.userProfile.profile,
+    error: state.userProfile.error,
+  }));
 
-  componentWillReceiveProps(newProps) {
-    const {username: oldUsername} = this.props.match.params;
-    const {username: futureUsername} = newProps.match.params;
-    if (oldUsername !== futureUsername) {
-      this.props.fetchUserProfile(futureUsername);
-    }
-  }
+  const dispatch = useDispatch();
+  const { username } = useParams();
 
-  render() {
-    const {isLoading, error, profile} = this.props;
+  useEffect(() => {
+    dispatch(fetchUserProfile(username));
+  }, [username, dispatch]);
 
-    if (error || !profile || isLoading) {
-      return (
-        <StatusMessage
-          error={error || !profile}
-          errorClassName="userProfile-error"
-          errorMessage={error}
-          loading={isLoading}
-          loadingMessage={`We are fetching the user profile for you`}
-          type="default"
-        />
-      );
-    }
-
-    const {
-      name,
-      username,
-      status,
-      bio,
-      avatar,
-      is_staff,
-      date_joined,
-    } = profile;
-
+  if (error || !profile || isLoading) {
     return (
-      <Profile
-        username={username}
-        name={name}
-        avatar={avatar}
-        status={status}
-        bio={bio}
-        dateJoined={date_joined}
-        isStaff={is_staff}
+      <StatusMessage
+        error={error || !profile}
+        errorClassName="userProfile-error"
+        errorMessage={error}
+        loading={isLoading}
+        loadingMessage={`We are fetching the user profile for you`}
+        type="default"
       />
     );
   }
-}
 
-const mapStateToProps = state => ({
-  isLoading: state.userProfile.isLoading,
-  profile: state.userProfile.profile,
-  error: state.userProfile.error,
-});
+  const {
+    name,
+    status,
+    bio,
+    avatar,
+    is_staff,
+    date_joined,
+  } = profile;
 
-const mapDispatchToProps = dispatch => ({
-  fetchUserProfile: username => {
-    dispatch(fetchUserProfile(username));
-  },
-});
+  return (
+    <Profile
+      username={username}
+      name={name}
+      avatar={avatar}
+      status={status}
+      bio={bio}
+      dateJoined={date_joined}
+      isStaff={is_staff}
+    />
+  );
+};
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UserProfileContainer);
+export default UserProfileContainer;

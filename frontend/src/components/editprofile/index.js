@@ -127,7 +127,12 @@ export default class EditProfile extends Component {
                   onDrop={this.onImageDrop}
                   multiple={false}
                   accept="image/*">
-                  <Image src={avatarURL} className="editProfile-avatar" />
+                  {({getRootProps, getInputProps}) => (
+                    <div {...getRootProps()} className="editProfile-dropzone">
+                      <input {...getInputProps()} />
+                      <Image src={avatarURL} className="editProfile-avatar" />
+                    </div>
+                  )}
                 </Dropzone>
               </Form.Field>
               <Form.Input

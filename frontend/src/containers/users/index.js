@@ -1,31 +1,22 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {fetchUsers} from '../../actions';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUsers } from '../../actions';
 import UserList from '../../components/userlist';
 
-class UsersContainer extends Component {
-  componentDidMount() {
-    this.props.fetchUsers();
-  }
+const UsersContainer = () => {
+  const { isLoading, users, error } = useSelector((state) => ({
+    isLoading: state.users.isLoading,
+    users: state.users.users,
+    error: state.users.error,
+  }));
 
-  render() {
-    return <UserList {...this.props} />;
-  }
-}
+  const dispatch = useDispatch();
 
-const mapStateToProps = state => ({
-  isLoading: state.users.isLoading,
-  users: state.users.users,
-  error: state.users.error,
-});
-
-const mapDispatchToProps = dispatch => ({
-  fetchUsers: () => {
+  useEffect(() => {
     dispatch(fetchUsers());
-  },
-});
+  }, [dispatch]);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UsersContainer);
+  return <UserList isLoading={isLoading} users={users} error={error} />;
+};
+
+export default UsersContainer;

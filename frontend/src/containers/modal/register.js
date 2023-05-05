@@ -1,60 +1,48 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Register from '../../components/register';
 import Modal from '../../components/modal';
-import {hideModal, registerReset, showModal, register} from '../../actions';
+import { hideModal, registerReset, showModal, register } from '../../actions';
 
-class RegisterModal extends Component {
-  componentWillMount() {
-    if (this.props.isAuthenticated) {
-      this.props.handleClose();
+const RegisterModal = () => {
+  const { isAuthenticated, error, isLoading } = useSelector((state) => ({
+    isAuthenticated: state.auth.isAuthenticated,
+    error: state.register.error,
+    isLoading: state.register.isLoading,
+  }));
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      handleClose();
     }
-  }
+  }, [isAuthenticated]);
 
-  render() {
-    const {
-      isAuthenticated,
-      isLoading,
-      error,
-      handleRegister,
-      showLogin,
-      handleClose,
-    } = this.props;
-
-    return isAuthenticated ? null : (
-      <Modal onClose={handleClose}>
-        <Register
-          handleRegister={handleRegister}
-          showLogin={showLogin}
-          isLoading={isLoading}
-          error={error}
-        />
-      </Modal>
-    );
-  }
-}
-
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  error: state.register.error,
-  isLoading: state.register.isLoading,
-});
-
-const mapDispatchToProps = dispatch => ({
-  handleRegister: data => {
+  const handleRegister = (data) => {
     dispatch(register(data));
-  },
-  handleClose: () => {
+  };
+
+  const handleClose = () => {
     dispatch(hideModal());
     dispatch(registerReset());
-  },
-  showLogin: () => {
+  };
+
+  const showLogin = () => {
     dispatch(showModal('LOGIN', {}));
     dispatch(registerReset());
-  },
-});
+  };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(RegisterModal);
+  return isAuthenticated ? null : (
+    <Modal onClose={handleClose}>
+      <Register
+        handleRegister={handleRegister}
+        showLogin={showLogin}
+        isLoading={isLoading}
+        error={error}
+      />
+    </Modal>
+  );
+};
+
+export default RegisterModal;
