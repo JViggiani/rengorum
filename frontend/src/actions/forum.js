@@ -8,11 +8,6 @@ import {apiErrorHandler} from '../utils/errorhandler';
 
 export const fetchForum = forum => dispatch => {
   
-    // 1 second delay
-  setTimeout(function(){
-    console.log("Executed after 1 second");
-  }, 10000);
-  
   dispatch(fetchForumRequest());
 
   fetchForumApi(forum)

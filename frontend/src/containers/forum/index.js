@@ -41,7 +41,8 @@ const ForumContainer = () => {
   return (
     <div>
       <NewThread
-        forum={slug}
+        forum={forum}
+        slug={slug}
         isAuthenticated={isAuthenticated}
         isLoading={newThreadLoading}
         success={newThreadSuccess}
