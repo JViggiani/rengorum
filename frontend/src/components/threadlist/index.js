@@ -8,8 +8,6 @@ import './styles.css';
 
 const ThreadList = () => {
   
-  console.log("JOSH - inside ThreadList()");
-  
   const { isLoading, error, threads } = useSelector((state) => ({
     isLoading: state.forum.isLoading,
     error: state.forum.error,
