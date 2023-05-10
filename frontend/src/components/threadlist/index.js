@@ -15,13 +15,8 @@ const ThreadList = () => {
     error: state.forum.error,
     threads: state.forum.threads,
   }));
-  
-  console.log("JOSH - isLoading: " + isLoading);
-  console.log("JOSH - error: " + error);
-  console.log("JOSH - threads: " + threads);
 
   if (error || !threads || isLoading || threads.length === 0) {
-    console.log("JOSH - baad");
     return (
       <StatusMessage
         error={error || !threads}
