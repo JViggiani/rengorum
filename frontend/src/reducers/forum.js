@@ -98,6 +98,7 @@ const forum = (state = initialState, action) => {
         ...state,
         newThreadName: action.name,
         newThreadContent: action.content,
+        newThreadId: action.id,
       };
     case CREATE_THREAD_TOGGLE:
       return {

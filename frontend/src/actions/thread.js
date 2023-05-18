@@ -104,6 +104,7 @@ export const createThreadSave = newThread => {
     type: CREATE_THREAD_SAVE,
     name: newThread.name,
     content: newThread.content,
+    id: newThread.id,
   };
 };
 

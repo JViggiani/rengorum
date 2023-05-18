@@ -11,6 +11,11 @@ import {
   DELETE_THREAD_REQUEST,
   DELETE_THREAD_SUCCESS,
   DELETE_THREAD_FAILURE,
+  CREATE_THREAD_REQUEST,
+  CREATE_THREAD_SUCCESS,
+  CREATE_THREAD_FAILURE,
+  CREATE_THREAD_SAVE,
+  CREATE_THREAD_TOGGLE,
 } from '../actions/types';
 
 const threadInitialState = {
@@ -122,7 +127,45 @@ const thread = (state = initialState, action) => {
         ...state,
         deletePostList: state.deletePostList.filter(id => id !== action.id),
       };
+    case CREATE_THREAD_REQUEST:
+      console.log("JOSH - CREATE_THREAD_TOGGLE. Action: " + JSON.stringify(action));
+      return {
+        ...state,
+        newThreadLoading: true,
+        newThreadError: null,
+        newThreadSuccess: false,
+      };
+    case CREATE_THREAD_SUCCESS:
+      return {
+        ...state,
+        newThreadLoading: false,
+        newThreadSuccess: true,
+        newThreadId: action.newThread.id,
+        newThreadName: action.newThread.name,
+        newThreadContent: action.newThread.content,
+        newThreadError: null,
+      };
+    case CREATE_THREAD_FAILURE:
+      return {
+        ...state,
+        newThreadLoading: false,
+        newThreadError: action.error,
+        newThreadSuccess: false,
+      };
+    case CREATE_THREAD_SAVE:
+      return {
+        ...state,
+        newThreadName: action.name,
+        newThreadContent: action.content,
+        newThreadId: action.id,
+      };
+    case CREATE_THREAD_TOGGLE:
+      return {
+        ...state,
+        newThreadShow: !state.newThreadShow,
+      };
     default:
+      console.log("JOSH - default reducer, returning state: " + JSON.stringify(state));
       return state;
   }
 };

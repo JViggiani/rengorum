@@ -86,19 +86,20 @@ const NewThread = (props) => {
 
   const onSubmit = useCallback(() => {
     if (isFormValid()) {
-      const {forum, createThread} = props;
       const content = JSON.stringify(
         convertToRaw(editorState.getCurrentContent()),
       );
       let newThread = {
         name: name,
-        forum: forum,
+        forum: props.forum,
         content: content,
       };
       console.log("JOSH - onSubmit newThread: " + JSON.stringify(newThread));
-      createThread(newThread);
+      props.updateNewThread(newThread);
+      props.createThread(newThread);
     }
   }, [isFormValid, name, editorState, props]);
+  
 
   const isValidLength = useCallback((contentState) => {
     const maxLength = props.maxLength || 100;
