@@ -38,6 +38,14 @@ const ForumContainer = () => {
     dispatch(fetchForum(forum));
   }, [forum, dispatch]);
 
+  // const newThread = {
+  //   name: newThreadName,
+  //   content: newThreadContent,
+  //   id: newThreadId,
+  // };
+
+  // console.log("JOSH - ForumContainer newThread: " + JSON.stringify(newThread));
+
   return (
     <div>
       <NewThread
@@ -51,7 +59,7 @@ const ForumContainer = () => {
         id={newThreadId}
         error={newThreadError}
         showEditor={newThreadShow}
-        createThread={() => dispatch(createThread())}
+        createThread={() => dispatch(createThread(/*newThread*/))}
         updateNewThread={(newThread) => dispatch(createThreadSave(newThread))}
         toggleShowEditor={() => dispatch(createThreadToggle())}
         maxLength={2000}

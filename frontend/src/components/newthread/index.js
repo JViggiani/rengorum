@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Link} from 'react-router-dom';
 import {getSelectedBlock} from 'draftjs-utils';
 import htmlToDraft from 'html-to-draftjs';
@@ -15,27 +15,12 @@ import './styles.css';
 import RichEditor from '../richeditor';
 import StatusMessage from '../statusmessage';
 
-export default class NewThread extends Component {
-  constructor(props) {
-    super(props);
-    const {name, content} = this.props;
-    let editorState = this.convertToEditorState(content);
-    this.state = {
-      name,
-      editorState,
-    };
-  }
+const NewThread = (props) => {
+  console.log("JOSH - NewThread ==START==");
+  console.log("JOSH - props: " + JSON.stringify(props));
+  const {name: initialName, content: initialContent} = props;
 
-  componentWillReceiveProps(newProps) {
-    const {name: newName, content: newContent} = newProps;
-    const editorState = this.convertToEditorState(newContent);
-    this.setState({
-      name: newName,
-      editorState,
-    });
-  }
-
-  convertToEditorState = content => {
+  const convertToEditorState = (content) => {
     let editorState = EditorState.createEmpty();
     if (content) {
       try {
@@ -49,61 +34,59 @@ export default class NewThread extends Component {
     return editorState;
   };
 
-  toggleShowEditor = () => {
-    this.props.toggleShowEditor();
-  };
+  const [name, setName] = useState(initialName);
+  const [editorState, setEditorState] = useState(convertToEditorState(initialContent));
 
-  onSave = () => {
-    // save to redux store (uncontrolled input way)
-    const {name, editorState} = this.state;
+  useEffect(() => {
+    setEditorState(convertToEditorState(props.content));
+    setName(props.name);
+  }, [props.content, props.name]);
+
+  const toggleShowEditor = useCallback(() => {
+    props.toggleShowEditor();
+  }, [props]);
+
+  const onSave = useCallback(() => {
+      const content = JSON.stringify(
+        convertToRaw(editorState.getCurrentContent())
+      );
+      props.updateNewThread({
+        name: name,
+        content: content,
+      });
+      toggleShowEditor();
+  }, [editorState, name, props]);
+
+  const onCancel = useCallback(() => {
+    const emptyEditorState = EditorState.createEmpty();
+    setName('');
+    setEditorState(emptyEditorState);
     const content = JSON.stringify(
-      convertToRaw(editorState.getCurrentContent()),
+      convertToRaw(emptyEditorState.getCurrentContent()),
     );
-    this.props.updateNewThread({
-      name: name,
+    props.updateNewThread({
+      name: '',
       content: content,
     });
-    this.toggleShowEditor();
-  };
+    toggleShowEditor();
+  }, [props, toggleShowEditor]);
 
-  onCancel = () => {
-    // reset & clear everything
-    const editorState = EditorState.createEmpty();
-    this.setState({
-      name: '',
-      editorState,
-    });
-    const content = JSON.stringify(
-      convertToRaw(editorState.getCurrentContent()),
-    );
-    this.props.updateNewThread({
-      name: '',
-      content: content,
-    });
-    this.toggleShowEditor();
-  };
+  const onNameChange = useCallback((e, {value}) => {
+    setName(value);
+  }, []);
 
-  onNameChange = (e, {value}) => {
-    this.setState({
-      name: value,
-    });
-  };
+  const onEditorStateChange = useCallback((newEditorState) => {
+    setEditorState(newEditorState);
+  }, []);
 
-  onEditorStateChange = editorState => {
-    this.setState({
-      editorState,
-    });
-  };
-
-  isFormValid = () => {
-    const {name} = this.state;
+  const isFormValid = useCallback(() => {
     return name;
-  };
+  }, [name]);
 
-  onSubmit = () => {
-    if (this.isFormValid()) {
-      const {name, editorState} = this.state;
-      const {forum, createThread} = this.props;
+
+  const onSubmit = useCallback(() => {
+    if (isFormValid()) {
+      const {forum, createThread} = props;
       const content = JSON.stringify(
         convertToRaw(editorState.getCurrentContent()),
       );
@@ -112,23 +95,23 @@ export default class NewThread extends Component {
         forum: forum,
         content: content,
       };
+      console.log("JOSH - onSubmit newThread: " + JSON.stringify(newThread));
       createThread(newThread);
     }
-  };
+  }, [isFormValid, name, editorState, props]);
 
-  isValidLength = contentState => {
-    const maxLength = this.props.maxLength || 100;
+  const isValidLength = useCallback((contentState) => {
+    const maxLength = props.maxLength || 100;
     return contentState.getPlainText('').length <= maxLength;
-  };
+  }, [props.maxLength]);
 
-  handleBeforeInput = input => {
-    const {editorState} = this.state;
-    if (!this.isValidLength(editorState.getCurrentContent())) {
+  const handleBeforeInput = useCallback(input => {
+    if (!isValidLength(editorState.getCurrentContent())) {
       return 'handled';
     }
-  };
+  }, [editorState, isValidLength]);
 
-  handlePastedText = (text, html, editorState, onChange) => {
+  const handlePastedText = useCallback((text, html) => {
     if (html) {
       const contentBlock = htmlToDraft(html);
       let contentState = editorState.getCurrentContent();
@@ -140,12 +123,10 @@ export default class NewThread extends Component {
         editorState.getSelection(),
         new List(contentBlock.contentBlocks),
       );
-      if (!this.isValidLength(contentState)) {
+      if (!isValidLength(contentState)) {
         return 'handled';
       }
-      onChange(
-        EditorState.push(editorState, contentState, 'insert-characters'),
-      );
+      setEditorState(EditorState.push(editorState, contentState, 'insert-characters'));
       return true;
     }
     const selectedBlock = getSelectedBlock(editorState);
@@ -155,17 +136,19 @@ export default class NewThread extends Component {
       text,
       editorState.getCurrentInlineStyle(),
     );
-    if (!this.isValidLength(newState)) {
+    if (!isValidLength(newState)) {
       return 'handled';
     }
-    onChange(EditorState.push(editorState, newState, 'insert-characters'));
+    setEditorState(EditorState.push(editorState, newState, 'insert-characters'));
     if (selectedBlock && selectedBlock.type === 'code') {
       return true;
     }
     return false;
-  };
+  }, [editorState, isValidLength]);
 
-  render() {
+
+  ///
+
     const {
       isAuthenticated,
       isLoading,
@@ -173,8 +156,8 @@ export default class NewThread extends Component {
       id,
       error,
       showEditor,
-    } = this.props;
-    const {name, editorState} = this.state;
+    } = props;
+
     if (!isAuthenticated) {
       return <div className="newThread-none" />;
     }
@@ -202,7 +185,7 @@ export default class NewThread extends Component {
               size="small"
               color="blue"
               floated="left"
-              onClick={this.toggleShowEditor}>
+              onClick={toggleShowEditor}>
               <Icon name="edit" />
               New Thread
             </Button>
@@ -226,7 +209,7 @@ export default class NewThread extends Component {
             type="text"
             name="name"
             value={name}
-            onChange={this.onNameChange}
+            onChange={onNameChange}
           />
           <Divider />
           <RichEditor
@@ -235,16 +218,16 @@ export default class NewThread extends Component {
             wrapperClassName="newThread-wrapper"
             toolbarClassName="newThread-toolbar"
             editorClassName="newThread-editor"
-            onEditorStateChange={this.onEditorStateChange}
-            handleBeforeInput={this.handleBeforeInput}
-            handlePastedText={this.handlePastedText}
+            onEditorStateChange={onEditorStateChange}
+            handleBeforeInput={handleBeforeInput}
+            handlePastedText={handlePastedText}
           />
           <Button
             color="blue"
             size="small"
             loading={isLoading}
             disabled={isLoading}
-            onClick={this.onSubmit}>
+            onClick={onSubmit}>
             <Icon name="edit" />
             Post thread
           </Button>
@@ -253,7 +236,7 @@ export default class NewThread extends Component {
             role="none"
             size="small"
             disabled={isLoading}
-            onClick={this.onSave}>
+            onClick={onSave}>
             <Icon name="save" />
             Save Draft
           </Button>
@@ -261,12 +244,13 @@ export default class NewThread extends Component {
             role="none"
             size="small"
             disabled={isLoading}
-            onClick={this.onCancel}>
+            onClick={onCancel}>
             <Icon name="cancel" />
             Clear
           </Button>
         </Form>
       </div>
     );
-  }
 }
+
+export default NewThread;
