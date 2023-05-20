@@ -16,8 +16,6 @@ import RichEditor from '../richeditor';
 import StatusMessage from '../statusmessage';
 
 const NewThread = (props) => {
-  console.log("JOSH - NewThread ==START==");
-  console.log("JOSH - props: " + JSON.stringify(props));
   const {name: initialName, content: initialContent} = props;
 
   const convertToEditorState = (content) => {
@@ -94,7 +92,6 @@ const NewThread = (props) => {
         forum: props.forum,
         content: content,
       };
-      console.log("JOSH - onSubmit newThread: " + JSON.stringify(newThread));
       props.updateNewThread(newThread);
       props.createThread(newThread);
     }

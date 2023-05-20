@@ -52,14 +52,10 @@ const ForumContainer = () => {
         error={newThreadError}
         showEditor={newThreadShow}
         createThread={(newThread) => {
-          console.log("JOSH - ForumContainer createThread newThread 1: " + JSON.stringify(newThread));
           dispatch(createThread(newThread));
-          console.log("JOSH - ForumContainer createThread newThread 2: " + JSON.stringify(newThread));
         }}
         updateNewThread={(newThread) => {
-          console.log("JOSH - ForumContainer updateNewThread newThread 1: " + JSON.stringify(newThread));
           dispatch(createThreadSave(newThread));
-          console.log("JOSH - ForumContainer updateNewThread newThread 2: " + JSON.stringify(newThread));
         }}
         toggleShowEditor={() => dispatch(createThreadToggle())}
         maxLength={2000}

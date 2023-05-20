@@ -64,7 +64,6 @@ const forum = (state = initialState, action) => {
         error: action.error,
       };
     case CREATE_THREAD_REQUEST:
-      console.log("JOSH - action: " + JSON.stringify(action));
       return {
         ...state,
         newThreadLoading: true,

@@ -128,7 +128,6 @@ const thread = (state = initialState, action) => {
         deletePostList: state.deletePostList.filter(id => id !== action.id),
       };
     case CREATE_THREAD_REQUEST:
-      console.log("JOSH - CREATE_THREAD_TOGGLE. Action: " + JSON.stringify(action));
       return {
         ...state,
         newThreadLoading: true,
@@ -165,7 +164,6 @@ const thread = (state = initialState, action) => {
         newThreadShow: !state.newThreadShow,
       };
     default:
-      console.log("JOSH - default reducer, returning state: " + JSON.stringify(state));
       return state;
   }
 };

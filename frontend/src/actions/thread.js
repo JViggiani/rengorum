@@ -54,7 +54,6 @@ export const fetchThreadFailure = error => {
 };
 
 export const createThread = newThread => dispatch => {
-  console.log("JOSH - createThread newThread: " + JSON.stringify(newThread));
   dispatch(createThreadRequest(newThread));
 
   createThreadApi(newThread)
@@ -78,7 +77,6 @@ export const createThread = newThread => dispatch => {
 };
 
 export const createThreadRequest = newThread => {
-  console.log("JOSH - createThreadRequest newThread: " + JSON.stringify(newThread));
   return {
     type: CREATE_THREAD_REQUEST,
     newThread,
