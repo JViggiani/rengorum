@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'fixture_magic',
 
     # local apps
     'accounts',
@@ -110,11 +111,21 @@ WSGI_APPLICATION = 'rengorum.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
 DATABASES = {
+    'postgres': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'local_database',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'sqlite': dj_database_url.config(
+        default=config('DATABASE_URL_SQLITE')
+    ),     
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
-    )
+    ),     
 }
 
 # Password validation

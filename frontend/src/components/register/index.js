@@ -118,6 +118,10 @@ export default class Register extends Component {
             Submit
           </Button>
         </Form>
+        <Message warning>
+          <Icon name="google" />
+          Login with Google
+        </Message>
         <Message attached="bottom" warning>
           <Icon name="help" />
           Already signed up?&nbsp;

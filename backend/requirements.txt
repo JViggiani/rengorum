@@ -6,3 +6,5 @@ Pillow==9.5.0
 PyJWT==1.6.1
 python-decouple==3.1
 pytz==2018.3
+psycopg2-binary==2.8.6
+django-fixture-magic==0.1.5
