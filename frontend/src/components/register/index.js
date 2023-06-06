@@ -1,31 +1,46 @@
-import React, {Component} from 'react';
+import React, {useState} from 'react';
 import {Form, Icon, Message, Button} from 'semantic-ui-react';
 import StatusMessage from '../../components/statusmessage';
+import { GoogleLogout, useGoogleLogin, GoogleLogin } from '@react-oauth/google';
+import { google } from 'googleapis';
 import './styles.css';
 
-export default class Register extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      name: '',
-      email: '',
-      password: '',
-      checked: true,
-    };
-  }
+const Register = ({ isLoading, error, showLogin, handleRegister }) => {
+  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [checked, setChecked] = useState(true);
 
-  handleChange = (e, {name, value}) => {
-    this.setState({[name]: value});
+  const handleChange = (e, { name, value }) => {
+    switch (name) {
+      case 'username':
+        setUsername(value);
+        break;
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'password':
+        setPassword(value);
+        break;
+      case 'checked':
+        setChecked(value);
+        break;
+      case 'profile':
+        setProfile(value);
+        break;
+      default:
+        break;
+    }
   };
 
-  handleCheckbox = () => {
-    this.setState({checked: !this.state.checked});
+  const handleCheckbox = () => {
+    setChecked(!checked);
   };
-
-  isFormValid = () => {
-    const {username, name, email, password, checked} = this.state;
-
+  const isFormValid = () => {
     let isFormValid = true;
     if (!username || !name || !email || !password || !checked) {
       isFormValid = false;
@@ -33,105 +48,143 @@ export default class Register extends Component {
     return isFormValid;
   };
 
-  handleSubmit = e => {
-    if (this.isFormValid()) {
-      let data = {
-        username: this.state.username,
-        name: this.state.name,
-        email: this.state.email,
-        password: this.state.password,
+  const handleSubmit = () => {
+    if (isFormValid()) {
+      const data = {
+        username,
+        name,
+        email,
+        password,
       };
-      this.props.handleRegister(data);
+      handleRegister(data);
     }
   };
 
-  render() {
-    let {isLoading, error, showLogin} = this.props;
+  const statusMessage = (
+    <StatusMessage
+      error={error}
+      errorMessage={error || 'Login Error'}
+      loading={isLoading}
+      loadingMessage={'Registering your account'}
+      type="modal"
+    />
+  );
 
-    const statusMessage = (
-      <StatusMessage
-        error={error}
-        errorMessage={error || 'Login Error'}
-        loading={isLoading}
-        loadingMessage={'Registering your account'}
-        type="modal"
+  const googleAuthConfig = {
+    clientId: '417973596481-urncu06kgopjihelktho0g9rm7tsmnpf.apps.googleusercontent.com',
+    scope: 'email',
+  };
+
+  const { signIn } = useGoogleLogin(googleAuthConfig);
+
+  const fetchGoogleEmail = async (response, username, name) => {
+    // Rest of the code remains the same
+    
+    try {
+      const userInfo = await oauth2.userinfo.get();
+      const { email } = userInfo.data;
+      // Use the email to register the user
+      const data = {
+        username: username,
+        name: name,
+        email: email,
+        password: '', // Since the user is signing in with Google, you can leave the password field empty
+      };
+      handleRegister(data);
+    } catch (error) {
+      console.log('Error fetching user email:', error);
+    }
+  };
+
+  const handleGoogleSuccess = (response) => {
+    const { username, name } = this.state; // Assuming you have input fields for username and name in the registration form
+    fetchGoogleEmail(response, username, name);
+  };
+
+  const handleGoogleError = (response) => {
+    // Handle the error login, e.g., refresh and display login failure
+    console.log('Google login error:', response);
+  };
+
+  return (
+    <div>
+      <Message
+        attached
+        header="Welcome to our site!"
+        content="Fill out the form below to sign-up for a new account"
       />
-    );
-
-    return (
-      <div>
-        <Message
-          attached
-          header="Welcome to our site!"
-          content="Fill out the form below to sign-up for a new account"
+      {statusMessage}
+      <Form className="attached fluid segment">
+        <Form.Input
+          required
+          label="Username"
+          placeholder="Username"
+          type="text"
+          name="username"
+          value={username}
+          onChange={handleChange}
         />
-        {statusMessage}
-        <Form className="attached fluid segment">
-          <Form.Input
-            required
-            label="Username"
-            placeholder="Username"
-            type="text"
-            name="username"
-            value={this.state.username}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            required
-            label="Name"
-            placeholder="Name"
-            type="text"
-            name="name"
-            value={this.state.name}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            required
-            label="Email"
-            placeholder="Email"
-            type="email"
-            name="email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          />
-          <Form.Input
-            required
-            label="Password"
-            type="password"
-            name="password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          />
-          <Form.Checkbox
-            inline
-            required
-            label="I agree to the terms and conditions"
-            name="agreement"
-            checked={this.state.checked}
-            onChange={this.handleCheckbox}
-          />
-          <Button
-            color="blue"
-            loading={isLoading}
-            disabled={isLoading}
-            onClick={this.handleSubmit}>
-            Submit
-          </Button>
-        </Form>
-        <Message warning>
-          <Icon name="google" />
-          Login with Google
-        </Message>
-        <Message attached="bottom" warning>
-          <Icon name="help" />
-          Already signed up?&nbsp;
-          {/* eslint-disable-next-line */}
-          <a className="register-login" onClick={showLogin}>
-            Login here
-          </a>
-          &nbsp;instead.
-        </Message>
+        <Form.Input
+          required
+          label="Name"
+          placeholder="Name"
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleChange}
+        />
+        <Form.Input
+          required
+          label="Email"
+          placeholder="Email"
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleChange}
+        />
+        <Form.Input
+          required
+          label="Password"
+          type="password"
+          name="password"
+          value={password}
+          onChange={handleChange}
+        />
+        <Form.Checkbox
+          inline
+          required
+          label="I agree to the terms and conditions"
+          name="agreement"
+          checked={checked}
+          onChange={handleCheckbox}
+        />
+        <Button
+          color="blue"
+          loading={isLoading}
+          disabled={isLoading}
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
+      </Form>
+      <div>
+        <GoogleLogin
+          clientId={googleAuthConfig.clientId}
+          onSuccess={handleGoogleSuccess}
+          onError={handleGoogleError}
+        />
       </div>
-    );
-  }
+      <Message attached="bottom" warning>
+        <Icon name="help" />
+        Already signed up?&nbsp;
+        {/* eslint-disable-next-line */}
+        <a className="register-login" onClick={showLogin}>
+          Login here
+        </a>
+        &nbsp;instead.
+      </Message>
+    </div>
+  );
 }
+
+export default Register;
