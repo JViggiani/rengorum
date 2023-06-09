@@ -11,6 +11,7 @@ import HeaderContainer from './containers/header';
 import ModalContainer from './containers/modal';
 import UserProfileContainer from './containers/userprofile';
 import UsersContainer from './containers/users';
+import KnowledgeBaseContainer from './containers/knowledgebase';
 import ThreadContainer from './containers/thread';
 import HomeContainer from './containers/home';
 import ForumContainer from './containers/forum';
@@ -30,6 +31,7 @@ root.render(
             <HeaderContainer />
             <Routes>
               <Route path="/users" element={<UsersContainer/>} />
+              <Route path="/knowledgebase" element={<KnowledgeBaseContainer/>} />
               <Route path="/user/:username" element={<UserProfileContainer/>} />
               <Route path="/forum/:forum" element={<ForumContainer/>} />
               <Route path="/thread/:thread" element={<ThreadContainer/>} />

@@ -17,8 +17,8 @@ const Navlink = () => {
         <Link to="/users">Users</Link>
       </div>
       <div className="link">
-        <Icon name="github" className="navlinkIcon" />
-        <a href="https://github.com/endiliey/rengorum">GitHub</a>
+        <Icon name="database" className="navlinkIcon" />
+        <Link to="/knowledgebase">Knowledge Base</Link>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import home from './home';
 import users from './users';
 import forum from './forum';
 import thread from './thread';
+import knowledgeBase from './knowledgebase';
 
 const rootReducer = combineReducers({
   auth,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   users,
   forum,
   thread,
+  knowledgeBase
 });
 
 export default rootReducer;

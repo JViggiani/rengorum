@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     'accounts',
     'forums',
     'threads',
-    'posts'
+    'posts', 
+    'knowledgebase'
 ]
 
 # https://github.com/ottoyiu/django-cors-headers
@@ -174,5 +175,5 @@ STATIC_URL = '/static/'
 # MEDIA
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Ref: https://stackoverflow.com/questions/34563454/django-imagefield-upload-to-path
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media")
+MEDIA_URL = "/files/"
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "files")

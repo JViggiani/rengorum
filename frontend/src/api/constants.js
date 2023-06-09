@@ -20,3 +20,6 @@ export const POST_URL = API_URL + 'post/';
 export const POST_CREATE_URL = POST_URL + 'create/';
 export const POST_EDIT_URL = '/edit/';
 export const POST_DELETE_URL = '/delete/';
+export const KNOWLEDGE_BASE_URL = API_URL + 'knowledgebase/';
+export const KNOWLEDGE_BASE_GET_URL = KNOWLEDGE_BASE_URL + 'get/';
+
